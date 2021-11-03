@@ -1,0 +1,40 @@
+#version 440
+
+#define EPS 0.001
+
+uniform vec2 resolution;
+uniform vec2 mouse;
+uniform float strength;
+uniform float drag;
+
+struct Particle{
+	vec4 pos;
+	vec4 vel;
+	vec4 acc;
+};
+
+layout(std140, binding=0) buffer particles{
+	Particle p[];
+};
+
+layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
+
+void main(){
+	uint gid = gl_GlobalInvocationID.x;
+
+	float drag = 0.96;
+	vec2 force = vec2(0.0, 0.0);
+
+	vec2 tomouse = mouse - p[gid].pos.xy;
+	tomouse = tomouse / (length(tomouse) + .1);
+
+	force = tomouse*0.6;
+
+	p[gid].acc.xy = force;
+	//p[gid].acc.xy = -strength/(d+EPS)*dir;
+
+	p[gid].vel.xy += p[gid].acc.xy;
+	p[gid].vel.xy *= drag;
+
+	p[gid].pos.xy += p[gid].vel.xy;
+}
