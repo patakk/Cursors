@@ -206,6 +206,7 @@
     <None Include="bin\data\shaders\cursor.comp" />
     <None Include="bin\data\shaders\cursor.frag" />
     <None Include="bin\data\shaders\cursor.vert" />
+    <None Include="bin\data\shaders\cursors.geom" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="bin\data\cursor.png" />

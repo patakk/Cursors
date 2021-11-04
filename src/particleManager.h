@@ -8,6 +8,7 @@ struct Particle {
 	ofVec4f pos;
 	ofVec4f vel;
 	ofVec4f acc;
+	ofVec4f drag;
 };
 
 class particleManager {
@@ -17,11 +18,13 @@ class particleManager {
 	ofShader computeShader, renderShader;
 
 	vector<Particle> particles;
+	vector<ofVec4f> vpos;
+	vector<ofVec4f> vvel;
+	vector<ofVec4f> vacc;
+	vector<float> vdrg;
 	ofBufferObject particlesBuffer;
 
 	ofVbo vbo;
-
-	ofPoint attractor;
 
 public:
 	ofTexture imgTexture;

@@ -29,6 +29,7 @@
     <None Include="bin\data\shaders\cursor.comp" />
     <None Include="bin\data\shaders\blur.vert" />
     <None Include="bin\data\shaders\blur.frag" />
+    <None Include="bin\data\shaders\cursors.geom" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="bin\data\cursor.png" />

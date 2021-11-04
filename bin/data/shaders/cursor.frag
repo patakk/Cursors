@@ -1,10 +1,21 @@
-uniform sampler2D tex0;
+#version 150
+//#extension GL_ARB_texture_rectangle : enable  
+
+uniform sampler2DRect tex0;
+
+in float vPointSize;
+in vec4 vPointVelocity;
+out vec4 vFragColor;
 
 void main () {
-    vec2 xy = gl_TexCoord[0].st;
+    vec2 xy = gl_PointCoord;
     xy = vec2(xy.x, 1. - xy.y);
-    vec4 color = texture2D(tex0, xy);
-    
-    gl_FragColor = vec4(1.,0.,0.,1.); // this works
-    // gl_FragColor = color; // this doesn't work, it's black
+    vec4 texcolor = texture( tex0, xy*vPointSize);
+
+    float a = texcolor.a;
+
+    float vx = vPointVelocity.x;
+    float vy = vPointVelocity.y;
+
+    vFragColor = texcolor;
 }

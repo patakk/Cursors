@@ -4,7 +4,9 @@ void ofApp::setup() {
 	ofSetVerticalSync(false);
 	ofSetFrameRate(60);
 
-	particleSystem.setup(10000);
+	ofSetVerticalSync(true);
+
+	particleSystem.setup(11000);
 	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
 
 	layer.allocate(ofGetWidth(), ofGetHeight());
@@ -15,7 +17,6 @@ void ofApp::update() {
 }
 
 void ofApp::draw() {
-
 	layer.begin();
 	ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
 	particleSystem.draw();
@@ -23,7 +24,7 @@ void ofApp::draw() {
 
 	ofEnableArbTex();
 	blurShader.begin();
-	blurShader.setUniform1f("blurAmnt", 6.);
+	blurShader.setUniform1f("blurAmnt", 3.);
 	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
 	ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
 	ofSetColor(ofColor(0, 255, 0));
