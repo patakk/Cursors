@@ -10,6 +10,7 @@ class ofApp : public ofBaseApp {
 	ofShader blurShader;
 
 	ofFbo layer;
+	ofFbo flowLayer;
 
 	public:
 		void setup();

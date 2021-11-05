@@ -14,9 +14,11 @@ vec3 hsv2rgb(vec3 c){
 }
 
 void main () {
+    float sca = vPointSize/32.;
     vec2 xy = gl_PointCoord;
     xy = vec2(xy.x, 1. - xy.y);
-    vec4 texcolor = texture( tex0, xy*vPointSize);
+    xy /= sca;
+    vec4 texcolor = texture(tex0, xy*vPointSize);
 
     float a = texcolor.a;
 
@@ -27,7 +29,8 @@ void main () {
     vx *= 0.1;
     vy *= 0.1;
 
-    //float ang = atan(vy, vx);
+    float ang = (atan(vy, vx) + 3.14159)/(2*3.14159);
+    float vel = length(vPointVelocity.xy)*0.1;
     //float hue = (ang + 3.14159)/(2*3.14159);
     //float sat = 0.6;
     //float bri = 0.9;
@@ -38,5 +41,5 @@ void main () {
 
     //vFragColor = texcolor;
     float alpha = float(texcolor.a > 0.5);
-    vFragColor = vec4(vx, vy, 0., 1.) * clamp(alpha, 0.3, 0.5);
+    vFragColor = vec4(ang, vel, 0., vel)*alpha;
 }

@@ -16,12 +16,15 @@ void particleManager::setup(const int n) {
 	computeShader.linkProgram();
 
 	renderShader.load("shaders/cursor.vert", "shaders/cursor.frag");
+	flowShader.load("shaders/cursorflow.vert", "shaders/cursorflow.frag");
 }
 
 void particleManager::initParticles() {
 	for (int i = 0; i < particleCount; ++i) {
-		particles[i].pos.x = ofRandom(100, ofGetWidth()-100);
-		particles[i].pos.y = ofRandom(100, ofGetHeight()-100);
+		//particles[i].pos.x = ofRandom(100, ofGetWidth() - 100);
+		//particles[i].pos.y = ofRandom(100, ofGetHeight() - 100);
+		particles[i].pos.x = ofGetWidth()/2;
+		particles[i].pos.y = ofGetHeight()/2;
 		particles[i].pos.z = 0.0;
 		particles[i].pos.w = 1.0;
 		particles[i].vel.x = 0.0;
@@ -57,4 +60,20 @@ void particleManager::draw() {
 	glActiveTexture(GL_TEXTURE0);
 	vbo.draw(GL_POINTS, 0, particleCount);
 	renderShader.end();
+}
+
+
+void particleManager::drawFlow() {
+	//ofEnableBlendMode(OF_BLENDMODE_ADD);
+
+	ofEnableAlphaBlending();
+	ofEnablePointSprites();
+	ofEnableArbTex();
+
+	flowShader.begin();
+	flowShader.setUniform2f("screen", glm::vec2(ofGetWidth(), ofGetHeight()));
+	flowShader.setUniformTexture("tex0", imgTexture, 0);
+	glActiveTexture(GL_TEXTURE0);
+	vbo.draw(GL_POINTS, 0, particleCount);
+	flowShader.end();
 }

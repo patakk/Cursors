@@ -95,7 +95,7 @@ void main(){
 	p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
 	//p[gid].acc.xy = -strength/(d+EPS)*dir;
 
-	p[gid].vel.xy += p[gid].acc.xy;
+	p[gid].vel.xy += p[gid].acc.xy*0.5;
 	p[gid].vel.xy *= drag.x;
 
 	p[gid].pos.xy += p[gid].vel.xy;

@@ -15,7 +15,9 @@ class particleManager {
 
 	int particleCount;
 
-	ofShader computeShader, renderShader;
+	ofShader computeShader;
+	ofShader renderShader;
+	ofShader flowShader;
 
 	vector<Particle> particles;
 	ofBufferObject particlesBuffer;
@@ -28,4 +30,5 @@ public:
 	void initParticles();
 	void update();
 	void draw();
+	void drawFlow();
 };
