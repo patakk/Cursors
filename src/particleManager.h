@@ -18,10 +18,6 @@ class particleManager {
 	ofShader computeShader, renderShader;
 
 	vector<Particle> particles;
-	vector<ofVec4f> vpos;
-	vector<ofVec4f> vvel;
-	vector<ofVec4f> vacc;
-	vector<float> vdrg;
 	ofBufferObject particlesBuffer;
 
 	ofVbo vbo;

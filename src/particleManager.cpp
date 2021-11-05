@@ -4,10 +4,6 @@ void particleManager::setup(const int n) {
 	particleCount = n;
 
 	particles.resize(particleCount);
-	vpos.resize(particleCount);
-	vvel.resize(particleCount);
-	vacc.resize(particleCount);
-	vdrg.resize(particleCount);
 
 	initParticles();
 	
@@ -33,14 +29,6 @@ void particleManager::initParticles() {
 		particles[i].acc.x = 0.0;
 		particles[i].acc.y = 0.0;
 		particles[i].drag.x = ofRandom(0.9, 0.98);
-
-		vpos[i].x = ofRandom(100, ofGetWidth() - 100);
-		vpos[i].y = ofRandom(100, ofGetHeight() - 100);
-		vvel[i].x = 0.0;
-		vvel[i].y = 0.0;
-		vacc[i].x = 0.0;
-		vacc[i].y = 0.0;
-		vdrg[i] = ofRandom(0.9, 0.98);
 	}
 }
 
