@@ -15,8 +15,9 @@ void main () {
     vec4 texcolor = texture(tex0, xy*vPointSize);
 
     float dist = length(xy*vPointSize);
-    dist = float(dist < 6);
+    dist = float(dist < 5);
 
-    vFragColor = texcolor;
-    //vFragColor = vec4(1.0, 1.0, 1.0, dist);
+    //vFragColor = texcolor;
+    vFragColor = vec4(1.0, 1.0, 1.0, dist*0.3);
+    vFragColor = vec4(dist*0.5, dist*0.5, dist*0.5, dist*0.5);
 }

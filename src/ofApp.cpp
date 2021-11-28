@@ -6,22 +6,30 @@ void ofApp::setup() {
 
 	ofSetVerticalSync(true);
 	ofHideCursor();
-	particleSystem.setup(3000);
+	particleSystem.setup(333);
 	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
 
 	layer.allocate(ofGetWidth(), ofGetHeight());
 	flowLayer.allocate(ofGetWidth(), ofGetHeight());
+
 }
 
 void ofApp::update() {
-	particleSystem.update();
 }
 
 void ofApp::draw() {
+	particleSystem.reset();
 	layer.begin();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
+	ofDisableBlendMode();
 	ofBackgroundGradient(ofColor(15, 15, 15), ofColor(15, 15, 15));
-	particleSystem.draw();
+	ofEnableBlendMode(OF_BLENDMODE_ADD);
+	for (int k = 0; k < 344; k++) {
+		particleSystem.update();
+		particleSystem.draw();
+	}
+	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
+	//ofBackgroundGradient(ofColor(15, 15, 15), ofColor(15, 15, 15));
+
 	layer.end();
 
 	flowLayer.begin();
@@ -30,14 +38,14 @@ void ofApp::draw() {
 	particleSystem.drawFlow();
 	flowLayer.end();
 
-	blurShader.begin();
-	blurShader.setUniform1f("blurAmnt", 3.);
-	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
-	layer.draw(0, 0);
-	blurShader.end();
+	//blurShader.begin();
+	//blurShader.setUniform1f("blurAmnt", 3.);
+	//blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
+	//blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
+	//layer.draw(0, 0);
+	//blurShader.end();
 
-	//layer.getTexture().draw(0, 0);
+	layer.getTexture().draw(0, 0);
 
 }
 

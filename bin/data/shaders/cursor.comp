@@ -92,11 +92,25 @@ void main(){
     noisexy.x = noise(pos + time*2.01 + float(gid), 0.02);
     noisexy.y = noise(pos + time*2.01 + 20*vec2(0.589, 0.1891)*float(gid), 0.02);
 
-	p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
+	//p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
 	//p[gid].acc.xy = -strength/(d+EPS)*dir;
 
-	p[gid].vel.xy += p[gid].acc.xy*0.5;
-	p[gid].vel.xy *= drag.x;
+	//p[gid].vel.xy += p[gid].acc.xy*0.5;
+	//p[gid].vel.xy *= drag.x;
 
 	p[gid].pos.xy += p[gid].vel.xy;
+    
+    if(p[gid].pos.x > resolution.x || p[gid].pos.x < 0){
+        p[gid].vel.xy = vec2(-p[gid].vel.x, p[gid].vel.y);
+    }
+    if(p[gid].pos.y > resolution.y || p[gid].pos.y < 0){
+        p[gid].vel.xy = vec2(p[gid].vel.x, -p[gid].vel.y);
+    }
+	p[gid].pos.xy += p[gid].vel.xy;
+
+
+    if(time == -1){
+        p[gid].pos.xy = mouse;
+        p[gid].vel.xy = p[gid].acc.xy;
+    }
 }

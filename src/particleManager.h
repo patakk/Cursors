@@ -4,6 +4,8 @@
 
 #define WORK_GROUP_SIZE 256
 
+// using acc as vel0
+
 struct Particle {
 	ofVec4f pos;
 	ofVec4f vel;
@@ -30,5 +32,6 @@ public:
 	void initParticles();
 	void update();
 	void draw();
+	void reset();
 	void drawFlow();
 };
