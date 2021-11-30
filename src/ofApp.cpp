@@ -9,6 +9,7 @@ void ofApp::setup() {
 	particleSystem.setup(22444);
 	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
 
+
 	layer.allocate(ofGetWidth(), ofGetHeight());
 	flowLayer.allocate(ofGetWidth(), ofGetHeight());
 
@@ -40,16 +41,8 @@ void ofApp::draw() {
 	//particleSystem.drawFlow();
 	//flowLayer.end();
 
-	flowLayer.begin();
-	blurShader.begin();
-	blurShader.setUniform1f("blurAmnt", 3.);
-	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
 	layer.draw(0, 0);
-	blurShader.end();
-	flowLayer.end();
 
-	layer.draw(0, 0);
 	if (ofGetFrameNum() % 100 == 0)
 		std::cout << ofGetFrameRate() << std::endl;
 }
@@ -62,7 +55,7 @@ void ofApp::keyPressed(int key) {
 		flowLayer.allocate(ofGetWidth(), ofGetHeight());
 		break;
 	case 's':
-		flowLayer.readToPixels(pixs);
+		flowLayer.readToPixels(pixs, 0);
 		ofSaveImage(pixs, "frames3/untitled_" + ofToString(ofGetFrameNum(), 5, '0') + ".png");
 		break;
 	default:

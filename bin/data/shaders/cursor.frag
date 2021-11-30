@@ -23,5 +23,5 @@ void main () {
     //vFragColor = vec4(1.0, 1.0, 1.0, dist*0.3);
     //vFragColor = vec4(dist*0.5, dist*0.5, dist*0.5, dist*0.19);
     float aa = progress;
-    vFragColor = vec4(vPointColor.r, vPointColor.g, vPointColor.b, (1-progress)*dist*.029);
+    vFragColor = vec4(vPointColor.r, vPointColor.g, vPointColor.b, dist*.029);
 }

@@ -26,6 +26,7 @@ class particleManager {
 	ofBufferObject particlesBuffer;
 
 	ofVbo vbo;
+	ofImage inputImage;
 
 public:
 	int particleCount;

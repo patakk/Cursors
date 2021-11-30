@@ -5,23 +5,25 @@ void particleManager::setup(const int n) {
 
 	particles.resize(particleCount);
 
+	inputImage.load("curves.png");
 	objectsLayer.allocate(ofGetWidth(), ofGetHeight());
 	objectsLayer.begin();
 	ofBackground(ofColor(0, 0, 0));
 	ofSetColor(ofColor(255, 255, 255, 33));
 	ofSetRectMode(OF_RECTMODE_CENTER);
-	for (int k = 0; k < 5; k++) {
+	/*for (int k = 0; k < 5; k++) {
 		float x = ofRandom(444, ofGetWidth() - 444);
 		float y = ofRandom(444, ofGetHeight() - 444);
 		float w = ofRandom(500, 700)*0.13;
 		float h = ofRandom(500, 700);
 		//ofDrawCircle(x, y, w, h);
 		ofDrawRectangle(x, y, w, h);
-	}
+	}*/
+	inputImage.draw(ofGetWidth() / 2, ofGetHeight() / 2);
 	objectsLayer.end();
 
 	initParticles();
-	
+
 	ofLoadImage(imgTexture, "cursor.png");
 	particlesBuffer.allocate(particles, GL_DYNAMIC_DRAW);
 	vbo.setVertexBuffer(particlesBuffer, 4, sizeof(Particle));
