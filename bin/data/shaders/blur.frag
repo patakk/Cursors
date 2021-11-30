@@ -89,24 +89,7 @@ vec3 hsv2rgb(vec3 c){
 
 void main()
 {
-    vec2 flowDir = texture2DRect(flow, texCoordVarying.xy).xy;
-    float ang = flowDir.x*2*3.14159-3.14159;
-    float vel = flowDir.y;
-    float vx = vel*cos(ang);
-    float vy = vel*sin(ang);
-    vec2 blurDir = vec2(vx, vy);
-
-
-    //flow_dir = vec2(-flow_dir.y, flow_dir.x);
-    vec4 blurred = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), blurDir*4);
-    //vec2 pos = vec2(texCoordVarying.xy);
-    //float nz = .4*noise(pos, 0.02) + .6*noise(pos, 0.1);
-    //color = vec4(nz, nz, nz, 1.0);
-    
-    vec3 hsv = vec3(flowDir.x, vel, vel);
-    vec3 rgb = hsv2rgb(hsv);
-    //outputColor = texture2DRect(tex0, texCoordVarying.xy);
-    outputColor = blurred;
+    outputColor = texture2DRect(tex0, texCoordVarying.xy);
     //outputColor = vec4(rgb, 1.0);
     //outputColor = vec4(flow_dir, 0., 1.);
      

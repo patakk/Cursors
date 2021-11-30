@@ -62,7 +62,7 @@ void ofApp::keyPressed(int key) {
 		flowLayer.allocate(ofGetWidth(), ofGetHeight());
 		break;
 	case 's':
-		
+		flowLayer.readToPixels(pixs);
 		ofSaveImage(pixs, "frames3/untitled_" + ofToString(ofGetFrameNum(), 5, '0') + ".png");
 		break;
 	default:
