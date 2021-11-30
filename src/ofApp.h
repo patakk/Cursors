@@ -11,6 +11,7 @@ class ofApp : public ofBaseApp {
 
 	ofFbo layer;
 	ofFbo flowLayer;
+	ofPixels pixs;
 
 	public:
 		void setup();

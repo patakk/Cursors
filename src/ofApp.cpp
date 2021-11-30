@@ -11,6 +11,8 @@ void ofApp::setup() {
 
 	layer.allocate(ofGetWidth(), ofGetHeight());
 	flowLayer.allocate(ofGetWidth(), ofGetHeight());
+
+	pixs.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
 }
 
 void ofApp::update() {
@@ -32,23 +34,24 @@ void ofApp::draw() {
 
 	layer.end();
 
-	flowLayer.begin();
+	//flowLayer.begin();
 	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackgroundGradient(ofColor(0,0,0), ofColor(0,0,0));
-	particleSystem.drawFlow();
-	flowLayer.end();
+	//ofBackgroundGradient(ofColor(0,0,0), ofColor(0,0,0));
+	//particleSystem.drawFlow();
+	//flowLayer.end();
 
-	//blurShader.begin();
-	//blurShader.setUniform1f("blurAmnt", 3.);
-	//blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	//blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
-	//layer.draw(0, 0);
-	//blurShader.end();
+	flowLayer.begin();
+	blurShader.begin();
+	blurShader.setUniform1f("blurAmnt", 3.);
+	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
+	blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
+	layer.draw(0, 0);
+	blurShader.end();
+	flowLayer.end();
 
 	layer.draw(0, 0);
 	if (ofGetFrameNum() % 100 == 0)
 		std::cout << ofGetFrameRate() << std::endl;
-
 }
 
 void ofApp::keyPressed(int key) {
@@ -59,7 +62,8 @@ void ofApp::keyPressed(int key) {
 		flowLayer.allocate(ofGetWidth(), ofGetHeight());
 		break;
 	case 's':
-		ofSaveFrame();
+		
+		ofSaveImage(pixs, "frames3/untitled_" + ofToString(ofGetFrameNum(), 5, '0') + ".png");
 		break;
 	default:
 		break;
