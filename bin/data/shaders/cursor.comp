@@ -2,6 +2,7 @@
 
 #define EPS 0.001
 
+uniform sampler2DRect tex0;
 uniform vec2 resolution;
 uniform vec2 mouse;
 uniform float time;
@@ -11,6 +12,7 @@ struct Particle{
 	vec4 vel;
 	vec4 acc;
 	vec4 drg;
+	vec4 col;
 };
 
 layout(std140, binding=0) buffer particles{
@@ -70,6 +72,22 @@ float noise(vec2 UV, float Scale)
     return 2*t-1;
 }
 
+
+vec2 getMirror(vec2 pos){
+    vec2 mirror = vec2(1, 0);
+    float aa = .6;
+    float cl = texture2DRect(tex0, pos + vec2(-aa, 0)).r;
+    float cr = texture2DRect(tex0, pos + vec2(+aa, 0)).r;
+    float cu = texture2DRect(tex0, pos + vec2(0, -aa)).r;
+    float cd = texture2DRect(tex0, pos + vec2(0, +aa)).r;
+    vec2 lr = (cr-cl)*vec2(1, 0);
+    vec2 ud = (cd-cu)*vec2(0, 1);
+    mirror = normalize(lr + ud);
+    mirror = vec2(-mirror.y, mirror.x);
+    return mirror;
+}
+
+
 void main(){
 	uint gid = gl_GlobalInvocationID.x;
 
@@ -106,11 +124,38 @@ void main(){
     if(p[gid].pos.y > resolution.y || p[gid].pos.y < 0){
         p[gid].vel.xy = vec2(p[gid].vel.x, -p[gid].vel.y);
     }
-	p[gid].pos.xy += p[gid].vel.xy;
+	p[gid].pos.xy += 1.*p[gid].vel.xy;
+    
+    
+    float texColor = texture2DRect(tex0, p[gid].pos.xy).r;
+    float prevColor = p[gid].drg.x;
+    if(prevColor == -1)
+        prevColor = texColor;
 
+    float diff = texColor - prevColor;
+    if(abs(diff) > 0.0100 && unity_noise_randomValue(p[gid].pos.xy)>0.15) {
+        vec2 mirror = getMirror(p[gid].pos.xy -  p[gid].vel.xy/2);
+        mirror = mirror  + 1.*(vec2(unity_noise_randomValue(p[gid].pos.xy/1000.), unity_noise_randomValue((p[gid].pos.xy+.314)/1000.))-.5);
+        //mirror = vec2(-mirror.y, mirror.x);
+        vec2 res = -p[gid].vel.xy + 2*dot(p[gid].vel.xy, mirror)*mirror;
+        p[gid].vel.xy = normalize(res);
+        //p[gid].vel.xy = -p[gid].vel.xy;
+        //float ang = atan(p[gid].vel.y, p[gid].vel.x) + 0.3*(-1+2*float(diff>0));
+        //p[gid].vel.x = cos(ang);
+        //p[gid].vel.y = sin(ang);
+	    p[gid].pos.xy += .1*p[gid].vel.xy;
+        p[gid].drg.x = texture2DRect(tex0, p[gid].pos.xy).r;
+        p[gid].col.g = max(0, p[gid].drg.g - 0.1);
+        p[gid].col.b = max(0, p[gid].drg.b - 0.1);
+    }
+    else{
+        p[gid].drg.x = texColor;
+    }
 
     if(time == -1){
-        p[gid].pos.xy = mouse;
+        p[gid].pos.xy = mouse + p[gid].drg.yz;
         p[gid].vel.xy = p[gid].acc.xy;
+        p[gid].drg.x = -1;
+        p[gid].col = vec4(1,1,1,1);
     }
 }
