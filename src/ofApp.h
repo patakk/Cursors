@@ -12,6 +12,8 @@ class ofApp : public ofBaseApp {
 	ofFbo layer;
 	ofFbo flowLayer;
 
+	float aliveCount;
+
 	public:
 		void setup();
 		void update();

@@ -32,22 +32,26 @@ void particleManager::initParticles() {
 		particles[i].acc.x = 0.0;
 		particles[i].acc.y = 0.0;
 		particles[i].drag.x = ofRandom(0.9, 0.98);
+		particles[i].drag.y = float(i);
 	}
 }
 
-void particleManager::update() {
+void particleManager::update(float aliveCount, ofFbo aaa) {
 
 	computeShader.begin();
 	computeShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 	computeShader.setUniform2f("mouse", ofGetMouseX(), ofGetMouseY());
 	computeShader.setUniform1f("time", ofGetFrameNum());
+	computeShader.setUniform1f("aliveCount", aliveCount);
+	computeShader.setUniformTexture("aaa", aaa, 0);
 	computeShader.dispatchCompute(particleCount / WORK_GROUP_SIZE, 1, 1);
 	// glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 	computeShader.end();
+	cout << aliveCount << "\n";
 }
 
 
-void particleManager::draw() {
+void particleManager::draw(float aliveCount) {
 	//ofEnableBlendMode(OF_BLENDMODE_ADD);
 
 	ofEnableAlphaBlending();
@@ -56,6 +60,7 @@ void particleManager::draw() {
 
 	renderShader.begin();
 	renderShader.setUniform2f("screen", glm::vec2(ofGetWidth(), ofGetHeight()));
+	renderShader.setUniform1f("aliveCount", glm::float32(aliveCount));
 	renderShader.setUniformTexture("tex0", imgTexture, 0);
 	glActiveTexture(GL_TEXTURE0);
 	vbo.draw(GL_POINTS, 0, particleCount);
@@ -63,7 +68,7 @@ void particleManager::draw() {
 }
 
 
-void particleManager::drawFlow() {
+void particleManager::drawFlow(float aliveCount) {
 	//ofEnableBlendMode(OF_BLENDMODE_ADD);
 
 	ofEnableAlphaBlending();
@@ -72,6 +77,7 @@ void particleManager::drawFlow() {
 
 	flowShader.begin();
 	flowShader.setUniform2f("screen", glm::vec2(ofGetWidth(), ofGetHeight()));
+	flowShader.setUniform1f("aliveCount", glm::float32(aliveCount));
 	flowShader.setUniformTexture("tex0", imgTexture, 0);
 	glActiveTexture(GL_TEXTURE0);
 	vbo.draw(GL_POINTS, 0, particleCount);

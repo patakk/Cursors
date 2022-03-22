@@ -23,12 +23,13 @@ class particleManager {
 	ofBufferObject particlesBuffer;
 
 	ofVbo vbo;
+	ofFbo aaa;
 
 public:
 	ofTexture imgTexture;
 	void setup(const int n);
 	void initParticles();
-	void update();
-	void draw();
-	void drawFlow();
+	void update(float aliveCount, ofFbo aaa);
+	void draw(float aliveCount);
+	void drawFlow(float aliveCount);
 };

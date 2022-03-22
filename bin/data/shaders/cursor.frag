@@ -5,6 +5,8 @@ uniform sampler2DRect tex0;
 
 in float vPointSize;
 out vec4 vFragColor;
+in float vPointDrgY;
+uniform float aliveCount;
 
 
 void main () {
@@ -17,6 +19,12 @@ void main () {
     float dist = length(xy*vPointSize);
     dist = float(dist < 6);
 
-    vFragColor = texcolor;
-    //vFragColor = vec4(1.0, 1.0, 1.0, dist);
+    //vFragColor = texcolor;
+
+    if(vPointDrgY > aliveCount)
+        vFragColor = vec4(1.0, 1.0, 1.0, 0);
+    else{
+        vFragColor = vec4(1.0, 1.0, 1.0, dist);
+    }
+	
 }

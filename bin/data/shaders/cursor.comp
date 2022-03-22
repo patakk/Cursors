@@ -5,6 +5,8 @@
 uniform vec2 resolution;
 uniform vec2 mouse;
 uniform float time;
+uniform float aliveCount;
+uniform sampler2DRect aaa;
 
 struct Particle{
 	vec4 pos;
@@ -72,6 +74,7 @@ float noise(vec2 UV, float Scale)
 
 void main(){
 	uint gid = gl_GlobalInvocationID.x;
+    
 
 	float drag = p[gid].drg.x;
     
@@ -91,12 +94,29 @@ void main(){
     vec2 noisexy = vec2(0, 0);
     noisexy.x = noise(pos + time*2.01 + float(gid), 0.02);
     noisexy.y = noise(pos + time*2.01 + 20*vec2(0.589, 0.1891)*float(gid), 0.02);
-
-	p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
+    
+	//p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
+	p[gid].acc.xy = 0.95*noisexy;
 	//p[gid].acc.xy = -strength/(d+EPS)*dir;
 
-	p[gid].vel.xy += p[gid].acc.xy*0.5;
+    vec4 texcolor = texture(aaa, pos/resolution);
+
+    p[gid].acc.xy *= 1 - 0*texcolor.r;
+
+	p[gid].vel.xy += p[gid].acc.xy*0.15;
 	p[gid].vel.xy *= drag.x;
 
 	p[gid].pos.xy += p[gid].vel.xy;
+    
+    if(p[gid].pos.x > resolution.x)
+        p[gid].pos.x = 0;
+    if(p[gid].pos.y > resolution.y)
+        p[gid].pos.y = 0;
+    if(p[gid].pos.x < 0)
+        p[gid].pos.x = resolution.x;
+    if(p[gid].pos.y < 0)
+        p[gid].pos.y = resolution.y;
+
+    if(p[gid].drg.y > aliveCount)
+        p[gid].pos.xy = mouse.xy;
 }

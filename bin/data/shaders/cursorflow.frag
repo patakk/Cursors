@@ -6,6 +6,8 @@ uniform sampler2DRect tex0;
 in float vPointSize;
 in vec2 vPointVelocity;
 out vec4 vFragColor;
+in float vPointDrgY;
+uniform float aliveCount;
 
 vec3 hsv2rgb(vec3 c){
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -42,4 +44,13 @@ void main () {
     //vFragColor = texcolor;
     float alpha = float(texcolor.a > 0.5);
     vFragColor = vec4(ang, vel, 0., vel)*alpha;
+
+    vFragColor = vec4(1., 1., 1., vel);
+    
+    if(vPointDrgY > aliveCount){
+        vFragColor = vec4(1., 1., 1., 0);
+    }
+    else{
+        vFragColor = vec4(1., 1., 1., vel);
+    }
 }

@@ -5,6 +5,7 @@ uniform mat4 modelViewProjectionMatrix;
 in vec4 position;
 out float vPointSize;
 out vec2 vPointVelocity;
+out float vPointDrgY;
 
 struct Particle{
 	vec4 pos;
@@ -23,7 +24,12 @@ void main(){
 	uint gid = gl_VertexID;
 
 	gl_Position = modelViewProjectionMatrix * position;
-	gl_PointSize = 40.0;
+	gl_PointSize = 10.0;
 	vPointSize = gl_PointSize; 
 	vPointVelocity = p[gid].vel.xy;
+
+    if(gid > aliveCount){
+		gl_PointSize = 0.0;
+		vPointSize = gl_PointSize; 
+	}
 }
