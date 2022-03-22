@@ -16,7 +16,7 @@ void ofApp::setup() {
 
 	flowLayer.begin();
 	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackgroundGradient(ofColor(255,255,255), ofColor(255, 255, 255));
+	ofBackgroundGradient(ofColor(0,0,0), ofColor(0, 0, 0));
 	flowLayer.end();
 }
 
@@ -33,7 +33,7 @@ void ofApp::draw() {
 
 	flowLayer.begin();
 	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackgroundGradient(ofColor(255, 255, 255, 12), ofColor(255, 255, 255, 12));
+	ofBackgroundGradient(ofColor(0, 0, 0, 255), ofColor(0, 0, 0, 255));
 	particleSystem.drawFlow(aliveCount);
 	flowLayer.end();
 
@@ -44,7 +44,7 @@ void ofApp::draw() {
 	layer.draw(0, 0);
 	blurShader.end();*/
 
-	flowLayer.draw(0, 0);
+	layer.draw(0, 0);
 
 	//layer.getTexture().draw(0, 0);
 

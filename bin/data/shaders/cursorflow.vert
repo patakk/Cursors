@@ -11,7 +11,7 @@ struct Particle{
 	vec4 pos;
 	vec4 vel;
 	vec4 acc;
-	vec4 drg;
+	vec4 drag;
 };
 
 layout(std140, binding=0) buffer particles{
@@ -24,12 +24,9 @@ void main(){
 	uint gid = gl_VertexID;
 
 	gl_Position = modelViewProjectionMatrix * position;
-	gl_PointSize = 10.0;
+	gl_PointSize = 20.0;
 	vPointSize = gl_PointSize; 
 	vPointVelocity = p[gid].vel.xy;
 
-    if(gid > aliveCount){
-		gl_PointSize = 0.0;
-		vPointSize = gl_PointSize; 
-	}
+	vPointDrgY = p[gid].drag.y;
 }

@@ -99,12 +99,12 @@ void main(){
 	p[gid].acc.xy = 0.95*noisexy;
 	//p[gid].acc.xy = -strength/(d+EPS)*dir;
 
-    vec4 texcolor = texture(aaa, pos/resolution);
+    vec4 texcolor = texture(aaa, pos + 10);
 
-    p[gid].acc.xy *= 1 - 0*texcolor.r;
+    p[gid].acc.xy += (texcolor.xy)*10;
 
 	p[gid].vel.xy += p[gid].acc.xy*0.15;
-	p[gid].vel.xy *= drag.x;
+	p[gid].vel.xy *= drag;
 
 	p[gid].pos.xy += p[gid].vel.xy;
     
