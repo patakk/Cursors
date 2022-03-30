@@ -29,7 +29,7 @@ public:
 	ofTexture imgTexture;
 	void setup(const int n);
 	void initParticles();
-	void update(float aliveCount, ofFbo aaa);
+	void update(float aliveCount, ofFbo aaa, float crazy);
 	void draw(float aliveCount);
 	void drawFlow(float aliveCount);
 };

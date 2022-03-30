@@ -21,10 +21,10 @@ void particleManager::setup(const int n) {
 
 void particleManager::initParticles() {
 	for (int i = 0; i < particleCount; ++i) {
-		//particles[i].pos.x = ofRandom(100, ofGetWidth() - 100);
-		//particles[i].pos.y = ofRandom(100, ofGetHeight() - 100);
-		particles[i].pos.x = ofGetWidth()/2;
-		particles[i].pos.y = ofGetHeight()/2;
+		particles[i].pos.x = ofRandom(100, ofGetWidth() - 100);
+		particles[i].pos.y = ofRandom(100, ofGetHeight() - 100);
+		//particles[i].pos.x = ofGetWidth()/2;
+		//particles[i].pos.y = ofGetHeight()/2;
 		particles[i].pos.z = 0.0;
 		particles[i].pos.w = 1.0;
 		particles[i].vel.x = 0.0;
@@ -36,23 +36,23 @@ void particleManager::initParticles() {
 	}
 }
 
-void particleManager::update(float aliveCount, ofFbo aaa) {
+void particleManager::update(float aliveCount, ofFbo aaa, float crazy) {
 
 	computeShader.begin();
 	computeShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 	computeShader.setUniform2f("mouse", ofGetMouseX(), ofGetMouseY());
 	computeShader.setUniform1f("time", ofGetFrameNum());
 	computeShader.setUniform1f("aliveCount", aliveCount);
+	computeShader.setUniform1f("crazy", crazy);
 	computeShader.setUniformTexture("aaa", aaa, 0);
 	computeShader.dispatchCompute(particleCount / WORK_GROUP_SIZE, 1, 1);
 	// glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 	computeShader.end();
-	cout << aliveCount << "\n";
 }
 
 
 void particleManager::draw(float aliveCount) {
-	//ofEnableBlendMode(OF_BLENDMODE_ADD);
+	//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 
 	ofEnableAlphaBlending();
 	ofEnablePointSprites();
@@ -63,8 +63,11 @@ void particleManager::draw(float aliveCount) {
 	renderShader.setUniform1f("aliveCount", glm::float32(aliveCount));
 	renderShader.setUniformTexture("tex0", imgTexture, 0);
 	glActiveTexture(GL_TEXTURE0);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	vbo.draw(GL_POINTS, 0, particleCount);
+	glBlendFunc(GL_SRC_ALPHA, GL_SRC_COLOR);
 	renderShader.end();
+
 }
 
 

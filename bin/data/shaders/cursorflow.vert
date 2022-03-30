@@ -24,7 +24,7 @@ void main(){
 	uint gid = gl_VertexID;
 
 	gl_Position = modelViewProjectionMatrix * position;
-	gl_PointSize = 20.0;
+	gl_PointSize = 10.0;
 	vPointSize = gl_PointSize; 
 	vPointVelocity = p[gid].vel.xy;
 

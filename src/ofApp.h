@@ -1,18 +1,11 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 
 #include "particleManager.h"
 
 class ofApp : public ofBaseApp {
-
-	particleManager particleSystem;
-	ofShader blurShader;
-
-	ofFbo layer;
-	ofFbo flowLayer;
-
-	float aliveCount;
 
 	public:
 		void setup();
@@ -29,4 +22,21 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		void setupProject(int numParticles);
+
+		particleManager particleSystem;
+		ofShader blurShader;
+
+		ofFbo layer0;
+		ofFbo layer1;
+		ofFbo layer2;
+		ofFbo flowLayer;
+
+		float aliveCount;
+
+		ofxPanel gui;
+		ofxToggle crazy;
+		ofxIntField particleNumField;
+		int particleNum;
 };

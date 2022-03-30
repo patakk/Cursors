@@ -20,7 +20,7 @@ void main () {
     vec2 xy = gl_PointCoord;
     vec2 xy0 = gl_PointCoord;
     xy = vec2(xy.x, 1. - xy.y);
-    xy /= sca;
+    //xy /= sca;
     vec4 texcolor = texture(tex0, xy*vPointSize);
 
     float a = texcolor.a;
@@ -41,9 +41,9 @@ void main () {
     
     //vx = max(0.0, min(vx, 1.0));
     //vy = max(0.0, min(vy, 1.0));
-
-    float op = length((xy0 - .5)*2*vPointSize);
-    op = float(op < 20) * float(op > 8);
+    
+    float op = length(gl_PointCoord-.5);
+    op = float(op > .1) * float(op < .5);
     //vFragColor = texcolor;
     float alpha = float(texcolor.a > 0.5);
     vFragColor = vec4(ang, vel, 0., vel)*alpha;
@@ -54,6 +54,6 @@ void main () {
         vFragColor = vec4(1., 1., 1., 0);
     }
     else{
-        vFragColor = vec4(xy0.x, xy0.y, 0, op);
+        vFragColor = vec4(xy0.x*op, xy0.y*op, 0, op);
     }
 }

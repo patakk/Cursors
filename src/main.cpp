@@ -1,12 +1,15 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 //========================================================================
 int main( ){
 
 	ofGLWindowSettings settings;
 	settings.setGLVersion(4, 6);
-	settings.setSize(1080, 1080);
+	//settings.windowMode = OF_FULLSCREEN;
+	settings.setSize(1600, 1000);
+
 	ofCreateWindow(settings);		// <-------- setup the GL context
 
 	// this kicks off the running of my app
