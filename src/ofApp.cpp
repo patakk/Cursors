@@ -7,7 +7,7 @@ void ofApp::setup() {
 	ofSetVerticalSync(true);
 	//ofHideCursor();
 
-	particleNum = 500000;
+	particleNum = 131100;
 	setupProject(particleNum);
 
 	gui.setup();
@@ -18,12 +18,13 @@ void ofApp::setup() {
 }
 
 void ofApp::update() {
-	particleSystem.update(aliveCount, flowLayer, float(crazy));
+	if (ofGetFrameNum() < 0)
+		particleUpdate(aliveCount, flowLayer, float(crazy));
 }
 
 void ofApp::setupProject(int numParticles) {
 	aliveCount = numParticles;
-	particleSystem.setup(numParticles);
+	particleSetup(numParticles);
 	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
 
 	layer1.allocate(ofGetWidth(), ofGetHeight());
@@ -54,43 +55,9 @@ void ofApp::setupProject(int numParticles) {
 }
 
 void ofApp::draw() {
-
-	//flowLayer.begin();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	//ofBackgroundGradient(ofColor(0, 0, 0, 255), ofColor(0, 0, 0, 255));
-	//particleSystem.drawFlow(aliveCount);
-	//flowLayer.end();
-
-	/*blurShader.begin();
-	blurShader.setUniform1f("blurAmnt", 3.);
-	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
-	layer.draw(0, 0);
-	blurShader.end();*/
-
-	//ofSetColor(255, 5);
-	//ofFill();
-	//ofRect(0, 0, ofGetWidth(), ofGetHeight());
-	//ofBackgroundGradient(ofColor(255, 255, 255, 3), ofColor(255, 255, 255, 3));
-	//layer1.draw(0, 0);
-
-	//layer0.begin();
-	//ofClear(255);
-	//layer0.clearColorBuffer(ofFloatColor(0, 0));
-	//blurShader.begin();
-	//blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	//blurShader.setUniformTexture("flow", flowLayer.getTexture(), 1);
-	//blurShader.setUniform1f("time", ofGetFrameNum());
-	//layer1.draw(0, 0);
-	//particleSystem.draw(aliveCount);
-	//blurShader.end();
-	//layer0.end();
-
-	//layer1.draw(0, 0);
-	//layer.getTexture().draw(0, 0);
-	layer1.begin();
-	ofBackground(211, 255);
-	particleSystem.draw(aliveCount);
+		layer1.begin();
+	ofBackground(11, 255);
+	particleDraw(aliveCount);
 	layer1.end();
 
 	layer2.begin();
@@ -112,6 +79,80 @@ void ofApp::draw() {
 		setupProject(particleNum);
 	}
 }
+
+
+void ofApp::particleSetup(const int n) {
+	particleCount = n;
+
+	particles.resize(particleCount);
+
+	initParticles();
+
+	ofLoadImage(imgTexture, "cursor.png");
+	particlesBuffer.allocate(particles, GL_DYNAMIC_DRAW);
+	vbo.setVertexBuffer(particlesBuffer, 4, sizeof(Particle));
+	particlesBuffer.bindBase(GL_SHADER_STORAGE_BUFFER, 0);
+
+	computeShader.setupShaderFromFile(GL_COMPUTE_SHADER, "shaders/cursor.comp");
+	computeShader.linkProgram();
+
+	renderShader.load("shaders/cursor.vert", "shaders/cursor.frag");
+	flowShader.load("shaders/cursorflow.vert", "shaders/cursorflow.frag");
+}
+
+void ofApp::initParticles() {
+	for (int i = 0; i < particleCount; ++i) {
+		particles[i].pos.x = ofRandom(100, ofGetWidth() - 100);
+		//particles[i].pos.y = ofRandom(100, ofGetHeight() - 100);
+		particles[i].pos.y = ofMap(i, 0, particleCount - 1, 100, ofGetHeight() - 100);
+		//particles[i].pos.x = ofGetWidth()/2;
+		//particles[i].pos.y = ofGetHeight()/2;
+		particles[i].pos.z = 0.0;
+		particles[i].pos.w = 1.0;
+		particles[i].vel.x = 0.0;
+		particles[i].vel.y = 0.0;
+		particles[i].acc.x = ofRandom(140, 220) / 255.;
+		particles[i].acc.y = ofRandom(110, 170) / 255.;
+		particles[i].acc.z = ofRandom(20, 200 * particles[i].pos.y / ofGetHeight()) / 255.;
+		particles[i].drag.x = ofRandom(0.9, 0.98);
+		particles[i].drag.y = float(i);
+	}
+}
+
+void ofApp::particleUpdate(float aliveCount, ofFbo aaa, float crazy) {
+
+	computeShader.begin();
+	computeShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
+	computeShader.setUniform2f("mouse", ofGetMouseX(), ofGetMouseY());
+	computeShader.setUniform1f("time", ofGetFrameNum());
+	computeShader.setUniform1f("aliveCount", aliveCount);
+	computeShader.setUniform1f("crazy", crazy);
+	computeShader.setUniformTexture("aaa", aaa, 0);
+	computeShader.dispatchCompute(particleCount / WORK_GROUP_SIZE, 1, 1);
+	// glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
+	computeShader.end();
+}
+
+
+void ofApp::particleDraw(float aliveCount) {
+	//ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+
+	ofEnableAlphaBlending();
+	ofEnablePointSprites();
+	ofEnableArbTex();
+
+	renderShader.begin();
+	renderShader.setUniform2f("screen", glm::vec2(ofGetWidth(), ofGetHeight()));
+	renderShader.setUniform1f("aliveCount", glm::float32(aliveCount));
+	renderShader.setUniformTexture("tex0", imgTexture, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	vbo.draw(GL_POINTS, 0, particleCount);
+	glBlendFunc(GL_SRC_ALPHA, GL_SRC_COLOR);
+	renderShader.end();
+
+}
+
 
 void ofApp::keyPressed(int key) {
 	ofImageQualityType quality = OF_IMAGE_QUALITY_BEST;
@@ -166,46 +207,12 @@ void ofApp::mouseMoved(int x, int y) {
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
-	aliveCount++;
+	setupProject(particleNum);
 }
 
 //--------------------------------------------------------------

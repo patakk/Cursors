@@ -7,7 +7,7 @@ in float vPointSize;
 out vec4 vFragColor;
 in float vPointDrgY;
 in vec2 vVel;
-in float vCol;
+in vec3 vCol;
 uniform float aliveCount;
 
 vec3 hsv2rgb(vec3 c){
@@ -24,7 +24,7 @@ void main () {
     vec4 texcolor = texture(tex0, xy*vPointSize);
 
     float dist = length(xy-.5);
-    float ddist = float(dist < .5);
+    float ddist = 1. - smoothstep(0.46, 0.54, dist);
     float dddist = dist * float(ddist < .5);
 
     float vv = length(vVel);
@@ -39,7 +39,8 @@ void main () {
     }
 
 
-    //vFragColor.xy = vVel;
+    vFragColor.rgb = vCol.rgb*pow(ddist, .5);
+    vFragColor.a = ddist;
     //vFragColor.z = 1.0;
 
 }

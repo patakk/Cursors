@@ -6,7 +6,7 @@ in vec4 position;
 out float vPointSize;
 out float vPointDrgY;
 out vec2 vVel;
-out float vCol;
+out vec3 vCol;
 
 struct Particle{
 	vec4 pos;
@@ -110,11 +110,11 @@ void main(){
 	float ps = clamp(1.*simplex3d_fractal(vec3(gid)), 0.0, 1.0);
 	// float ps = 2.728;
 	ps = 2.6 + 2*power(ps, 1);
-	gl_PointSize = ps*1;
+	gl_PointSize = ps*3;
 	vPointSize = gl_PointSize; 
 	vPointDrgY = p[gid].drag.y;
 
 	vVel = p[gid].drag.zw;
 
-	vCol = mod(float(gid)*0.00001, 1.0)*.1;
+	vCol = p[gid].acc.rgb;
 }

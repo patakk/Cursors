@@ -3,11 +3,23 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 
-#include "particleManager.h"
-
 class ofApp : public ofBaseApp {
 
+	struct Particle {
+		ofVec4f pos;
+		ofVec4f vel;
+		ofVec4f acc;
+		ofVec4f drag;
+	};
+
+
 	public:
+		ofTexture imgTexture;
+		void particleSetup(const int n);
+		void initParticles();
+		void particleUpdate(float aliveCount, ofFbo aaa, float crazy);
+		void particleDraw(float aliveCount);
+		void drawFlow(float aliveCount);
 		void setup();
 		void update();
 		void draw();
@@ -25,7 +37,18 @@ class ofApp : public ofBaseApp {
 
 		void setupProject(int numParticles);
 
-		particleManager particleSystem;
+		int particleCount;
+
+		ofShader computeShader;
+		ofShader renderShader;
+		ofShader flowShader;
+
+		vector<Particle> particles;
+		ofBufferObject particlesBuffer;
+
+		ofVbo vbo;
+		ofFbo aaa;
+
 		ofShader blurShader;
 
 		ofFbo layer0;
@@ -39,4 +62,6 @@ class ofApp : public ofBaseApp {
 		ofxToggle crazy;
 		ofxIntField particleNumField;
 		int particleNum;
+
+
 };
