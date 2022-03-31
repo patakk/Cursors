@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 
+#define WORK_GROUP_SIZE 256
+
 class ofApp : public ofBaseApp {
 
 	struct Particle {
