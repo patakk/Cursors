@@ -16,12 +16,6 @@ class ofApp : public ofBaseApp {
 
 
 	public:
-		ofTexture imgTexture;
-		void particleSetup(const int n);
-		void initParticles();
-		void particleUpdate(float aliveCount, ofFbo aaa, float crazy);
-		void particleDraw(float aliveCount);
-		void drawFlow(float aliveCount);
 		void setup();
 		void update();
 		void draw();
@@ -37,8 +31,14 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		void setupProject(int numParticles);
+		void resetProject(int numParticles);
+		void particleSetup(const int n);
+		void initParticles();
+		void particleUpdate(float aliveCount, ofFbo aaa, float crazy);
+		void particleDraw(float aliveCount);
+		void drawFlow(float aliveCount);
 
+		ofTexture imgTexture;
 		int particleCount;
 
 		ofShader computeShader;
@@ -50,12 +50,13 @@ class ofApp : public ofBaseApp {
 
 		ofVbo vbo;
 		ofFbo aaa;
-
+		ofLight light;
+		ofEasyCam cam;
 		ofShader blurShader;
 
-		ofFbo layer0;
-		ofFbo layer1;
-		ofFbo layer2;
+		ofFbo threeDLayer;
+		ofFbo particleLayer;
+		ofFbo postLayer;
 		ofFbo flowLayer;
 
 		float aliveCount;

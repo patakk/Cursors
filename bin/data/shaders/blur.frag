@@ -136,12 +136,12 @@ void main()
 	//dir.y = amp*simplex3d(ppp+.5);
 
     vec4 pts = texture(tex0, texCoordVarying.xy);
-    outputColor = vec4(1,0,0,1);
-    outputColor = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), dir);
+    outputColor = blur13(flow, texCoordVarying.xy, vec2(1.,1.), dir);
     //outputColor.r = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp, 0.)).r;
     //outputColor.g = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*2.1, 0.)).g;
     //outputColor.b = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*3.2, 0.)).b;
-    outputColor.rgb = outputColor.rgb;
+    outputColor.rgb = clamp(abs(outputColor.rrr), 0., 1.);
+    outputColor = vec4(1,1,0,1);
     //outputColor = vec4(rgb, 1.0);
     //outputColor = vec4(flow_dir, 0., 1.);
      

@@ -7,7 +7,7 @@ uniform vec2 mouse;
 uniform float time;
 uniform float aliveCount;
 uniform float crazy;
-uniform sampler2DRect aaa;
+uniform sampler2DRect threeD;
 
 struct Particle{
 	vec4 pos;
@@ -109,7 +109,7 @@ float power(float p, float g) {
 void main(){
 	uint gid = gl_GlobalInvocationID.x;
     
-	return;
+	//return;
 
 	float drag = p[gid].drg.x;
     
@@ -170,8 +170,7 @@ void main(){
 	//p[gid].acc.xy = 1127.5*noisexy.xy;
 	//p[gid].acc.xy = -strength/(d+EPS)*dir;
 
-    //vec4 texcolor = texture(aaa, p[gid].pos.xy + vec2(0.));
-
+	
     //vec2 cc = texcolor.xy;
     //if(texcolor.x+texcolor.y > 0.5){
     //    cc -= vec2(.5);
@@ -207,7 +206,10 @@ void main(){
         p[gid].acc.xy += vec2(1., 0.)*13;
     if(p[gid].pos.y < 160.)
         p[gid].acc.xy += vec2(0., 1.)*13;*/
-
+	
+	
+	//p[gid].pos.xy += 4*random3(vec3(p[gid].pos.x, p[gid].pos.y, time)).xy;
+	//p[gid].acc.xy = random3(vec3(p[gid].pos.x, p[gid].pos.y, time)).xy;
     
     if(p[gid].pos.x >= resolution.x)
         p[gid].pos.x = 0.0;
@@ -221,7 +223,6 @@ void main(){
 	//p[gid].vel.xy += p[gid].acc.xy*0.05;
 	//p[gid].vel.xy *= (drag + 1.)/2.;
     
-	//p[gid].pos.xy += p[gid].vel.xy;
     
     p[gid].drg.zw = p[gid].vel.xy;
 }

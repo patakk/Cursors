@@ -24,7 +24,7 @@ void main () {
     vec4 texcolor = texture(tex0, xy*vPointSize);
 
     float dist = length(xy-.5);
-    float ddist = 1. - smoothstep(0.46, 0.54, dist);
+    float ddist = 1. - smoothstep(0.25, 0.45, dist);
     float dddist = dist * float(ddist < .5);
 
     float vv = length(vVel);
@@ -39,8 +39,8 @@ void main () {
     }
 
 
-    vFragColor.rgb = vCol.rgb*pow(ddist, .5);
-    vFragColor.a = ddist;
+    vFragColor.rgb = vCol.rgb;
+    vFragColor.a = texcolor.a;
     //vFragColor.z = 1.0;
 
 }

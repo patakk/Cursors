@@ -7,6 +7,7 @@ out float vPointSize;
 out float vPointDrgY;
 out vec2 vVel;
 out vec3 vCol;
+uniform float time;
 
 struct Particle{
 	vec4 pos;
@@ -106,11 +107,14 @@ float power(float p, float g) {
 
 void main(){
 	uint gid = gl_VertexID;
+	
+	vec4 rpos = position;
+	rpos.xy += 4*random3(vec3(rpos.x, rpos.y, time)).xy;
 	gl_Position = modelViewProjectionMatrix * position;
 	float ps = clamp(1.*simplex3d_fractal(vec3(gid)), 0.0, 1.0);
 	// float ps = 2.728;
 	ps = 2.6 + 2*power(ps, 1);
-	gl_PointSize = ps*3;
+	gl_PointSize = ps*12;
 	vPointSize = gl_PointSize; 
 	vPointDrgY = p[gid].drag.y;
 
