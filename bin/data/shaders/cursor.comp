@@ -8,6 +8,7 @@ uniform float time;
 uniform float aliveCount;
 uniform float crazy;
 uniform sampler2DRect threeD;
+uniform sampler2DRect depthL;
 
 struct Particle{
 	vec4 pos;
@@ -147,82 +148,29 @@ void main(){
 
     vec2 noisexy = vec2(0, 0);
 	float qq = simplex3d(nzp*0.01+vec3(0.2589, 0.4891, 5.1311));
-    float ang = 66*simplex3d(nzp*.527*qq + time*0.02 + float(gid*0));
-    float ang2 = 0*simplex3d(nzp*.637 + time*0.001 + .1*float(gid*1));
-
-    float r = .6;
-    //noisexy.x = r*cos(ang)*crazy + (1-crazy)*simplex3d(nzp)*tttime*5.4;
-    //noisexy.y = r*sin(ang)*crazy + (1-crazy)*simplex3d(nzp+.5)*tttime*1.6;
-
-	//float aa = atan(noisexy.y, noisexy.x);
-	//float dd = length(noisexy.xy);
-	//aa = round(aa/(3.14159/4))*(3.14159/2);
-	//noisexy.x = dd*cos(aa);
-	//noisexy.y = dd*sin(aa);
-
-    //noisexy.x = simplex3d(nzp);
-    //noisexy.y = simplex3d(nzp+.5);
     
-    //noisexy.x = r*cos(ang+ang2);
-    //noisexy.y = r*sin(ang+ang2);
-
-	//p[gid].acc.xy = mouseforce*tomouse + 0.95*noisexy;
-	//p[gid].acc.xy = 1127.5*noisexy.xy;
-	//p[gid].acc.xy = -strength/(d+EPS)*dir;
-
+	p[gid].acc.rgb = random3(vec3(p[gid].pos.x, p[gid].pos.y, time)).rgb;
 	
-    //vec2 cc = texcolor.xy;
-    //if(texcolor.x+texcolor.y > 0.5){
-    //    cc -= vec2(.5);
-    //    cc = cc/length(cc);
-    //    cc.y *= -1;
-    //}
-    //else{
-    //    cc *= 0;
-    //}
-    //p[gid].acc.xy *= 0;
-    //if(noise(vec2(float(gid)+time, float(gid)+time), 1.) < 0.5){
-        //p[gid].acc.xy += cc*7;
-    //}
-	//p[gid].acc.xy += cc*17;
-    //p[gid].acc.xy += 47*noisexy;
-    //p[gid].acc.xy += -40*tomouse;
+	vec4 texcolor = texture(threeD, p[gid].pos.xy);
+	vec4 texdepth = texture(depthL, p[gid].pos.xy);
 
-	//p[gid].acc.xy += 5*vec2(0., 1.)*float(gid)/float(aliveCount);
-    
-    if(p[gid].drg.y > aliveCount){
-       // vec2 vv = vec2(0*noise(4*pos+vec2(0.855589, 0.14891)*float(gid), 0.129), 20*noise(4*pos+vec2(0.855589, 0.14891)*float(gid)+3141.41, 0.329));
-        //p[gid].pos.xy = mouse.xy + vv;
-        //p[gid].acc.xy *= 0;
-    }
-
-    //p[gid].acc.xy += vec2(0,7);
-
-    /*if(p[gid].pos.x > resolution.x-160.)
-        p[gid].acc.xy += vec2(-1., 0.)*13;
-    if(p[gid].pos.y > resolution.y-160.)
-        p[gid].acc.xy += vec2(0., -1.)*13;
-    if(p[gid].pos.x < 160.)
-        p[gid].acc.xy += vec2(1., 0.)*13;
-    if(p[gid].pos.y < 160.)
-        p[gid].acc.xy += vec2(0., 1.)*13;*/
+	vec3 rrgb = random3(vec3(p[gid].pos.x, p[gid].pos.y, time+313.313)).rgb;
+	p[gid].acc.rgb = texcolor.rgb*(0.65+0.35*texdepth.r) + vec3(.3, .3, .3)*(-.5+rrgb); // color
+	p[gid].drg.x = texdepth.r; // depth for pointsize
 	
+	p[gid].drg.z = -1.0; // discard
+	if(texdepth.r == texdepth.g && texdepth.g == texdepth.b && texcolor.g < 0.5){
+		p[gid].drg.z = 0; // not background
+	}
 	
-	//p[gid].pos.xy += 4*random3(vec3(p[gid].pos.x, p[gid].pos.y, time)).xy;
-	//p[gid].acc.xy = random3(vec3(p[gid].pos.x, p[gid].pos.y, time)).xy;
-    
-    if(p[gid].pos.x >= resolution.x)
-        p[gid].pos.x = 0.0;
-    if(p[gid].pos.y >= resolution.y)
-        p[gid].pos.y = 0.0;
-    if(p[gid].pos.x < 0.0)
-        p[gid].pos.x = resolution.x-1.;
-    if(p[gid].pos.y < 0.0)
-        p[gid].pos.y = resolution.y-1.;
+	if(texdepth.r == 0.0 && texdepth.g == 0.0 && texdepth.b == 1.0){
+		p[gid].drg.z = 1.; // background
+	}
+	
+	if(texcolor.r == 0.0 && texcolor.g == 1.0 && texcolor.b == 0.0){
+		p[gid].drg.z = 0.5; // ground
+	}
+	
 
-	//p[gid].vel.xy += p[gid].acc.xy*0.05;
-	//p[gid].vel.xy *= (drag + 1.)/2.;
-    
-    
-    p[gid].drg.zw = p[gid].vel.xy;
+    p[gid].drg.y = time; // time
 }

@@ -11,6 +11,7 @@ void ofApp::setup() {
 	particleNum = 131100;
 	resetProject(particleNum);
 
+
 	gui.setup();
 	gui.setSize(200, 100);
 	gui.add(particleNumField.setup("particle count", particleNum, 10000, 3000000));
@@ -19,72 +20,62 @@ void ofApp::setup() {
 }
 
 void ofApp::update() {
-	particleUpdate(aliveCount, threeDLayer, float(crazy));
+	if (ofGetFrameNum() < 2) {
+	}
 }
 
 
-void ofApp::resetProject(int numParticles) {
-	aliveCount = numParticles;
-	particleSetup(numParticles);
-	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
-
-	particleLayer.allocate(ofGetWidth(), ofGetHeight());
-	postLayer.allocate(ofGetWidth(), ofGetHeight());
-	flowLayer.allocate(ofGetWidth(), ofGetHeight());
-
-	threeDLayer.allocate(ofGetWidth(), ofGetHeight());
-
-
-	particleLayer.begin();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	//ofBackground(255, 255, 255);
-	particleLayer.end();
-
-	postLayer.begin();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackground(255, 255, 255);
-	postLayer.end();
-
-	flowLayer.begin();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackgroundGradient(ofColor(0, 0, 0, 255), ofColor(0, 0, 0, 255));
-	flowLayer.end();
-
-	ofBackground(255);
+ofColor ofApp::hsv2rgb(ofColor c) {
+	float h = c[0]/255.;
+	float s = c[1] / 255.;
+	float v = c[2] / 255.;
+	float r, g, b, f, p, q, t;
+	int i = floor(h * 6);
+	f = h * 6 - i;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+	if (i % 6 == 0) { r = v, g = t, b = p; }
+	if (i % 6 == 1) { r = q, g = v, b = p; }
+	if (i % 6 == 2) { r = p, g = v, b = t; }
+	if (i % 6 == 3) { r = p, g = q, b = v; }
+	if (i % 6 == 4) { r = t, g = p, b = v; }
+	if (i % 6 == 5) { r = v, g = p, b = q; }
+	return ofColor(r*255, g * 255, b * 255);
 }
 
 void ofApp::draw() {
 	ofClear(0);
 	ofSetColor(255);
 
+	// create 3D scene
 	threeDLayer.begin();
-	cam.begin();
-	ofEnableDepthTest();
-	//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
-	ofBackground(230, 90, 30);
-	ofPushMatrix();
-	ofTranslate(0, 0, 0);
-	ofRotate(ofDegToRad(33), 1.0, 1.0, 1.0);
-	ofSetColor(0,255,0);
-	ofBox(444, 22, 444);
-	ofPopMatrix();
-	ofDisableDepthTest();
-	cam.end();
+	threeDraw(false);
 	threeDLayer.end();
 
+	// create depth scene
+	depthLayer.begin();
+	threeDraw(true);
+	depthLayer.end();
+
+	// draw particles
 	particleLayer.begin();
-	ofBackground(255);
+	ofBackground(bgColor + offColor);
 	particleDraw(aliveCount);
 	particleLayer.end();
 
-	postLayer.begin();
-	//blurShader.begin();
-	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	blurShader.setUniform1f("time", ofGetFrameNum());
+	// blurring
 	ofSetColor(255);
+	postLayer.begin();
+	ofEnableArbTex();
+	blurShader.begin();
+	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
+	blurShader.setUniformTexture("depthL", depthLayer, 0);
+	blurShader.setUniform1f("time", time);
 	//threeDLayer.draw(0, 0);
+	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 	particleLayer.draw(0, 0);
-	//threeDLayer.getDepthTexture().draw(0, 0);
+	//threeDLayer.getTexture().draw(0, 0);
 	blurShader.end();
 	postLayer.end();
 
@@ -92,14 +83,31 @@ void ofApp::draw() {
 
 	gui.draw();
 
-	if (particleNum != particleNumField) {
-		//cout << "aaaaa " << particleNumField << " " << particleNum << "\n";
-		particleNum = particleNumField;
-		resetProject(particleNum);
-	}
+	if (aliveCount != particleNumField)
+		resetProject(particleNumField);
 }
 
+void ofApp::resetProject(int numParticles) {
+	aliveCount = numParticles;
+	particleSetup(numParticles);
 
+	offColor = ofColor(ofRandom(-14 * 3, 14), ofRandom(-7, 4), ofRandom(-7, 7));
+
+	treeSetup();
+	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
+	depthShader.load("shaders/depth.vert", "shaders/depth.frag");
+
+	bgColor = hsv2rgb(ofColor(ofRandom(255), ofRandom(50, 140), ofRandom(80, 240)));
+
+	particleLayer.allocate(ofGetWidth(), ofGetHeight());
+	postLayer.allocate(ofGetWidth(), ofGetHeight());
+	flowLayer.allocate(ofGetWidth(), ofGetHeight());
+	depthLayer.allocate(ofGetWidth(), ofGetHeight());
+	threeDLayer.allocate(ofGetWidth(), ofGetHeight());
+
+	time++;
+	particleUpdate(aliveCount, threeDLayer, depthLayer, float(crazy));
+}
 
 
 void ofApp::keyPressed(int key) {
@@ -117,8 +125,15 @@ void ofApp::keyPressed(int key) {
 		particleLayer.allocate(ofGetWidth(), ofGetHeight());
 		postLayer.allocate(ofGetWidth(), ofGetHeight());
 		flowLayer.allocate(ofGetWidth(), ofGetHeight());
+		depthLayer.allocate(ofGetWidth(), ofGetHeight());
+		threeDLayer.allocate(ofGetWidth(), ofGetHeight());
 
 		//threeDLayer.allocate(fbosettings);
+
+		depthLayer.begin();
+		//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
+		ofBackgroundGradient(ofColor(255, 255, 255), ofColor(255, 255, 255));
+		depthLayer.end();
 
 		threeDLayer.begin();
 		//ofBackgroundGradient(ofColor(0, 0, 255), ofColor(70, 100, 255));
@@ -157,7 +172,8 @@ void ofApp::mouseMoved(int x, int y) {
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-	
+	time++;
+	particleUpdate(aliveCount, threeDLayer, depthLayer, float(crazy));
 }
 
 //--------------------------------------------------------------
@@ -182,7 +198,7 @@ void ofApp::mouseExited(int x, int y) {
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
-
+	resetProject(particleNum);
 	//setupProject(particleNum);
 }
 

@@ -5,9 +5,9 @@ uniform mat4 modelViewProjectionMatrix;
 in vec4 position;
 out float vPointSize;
 out float vPointDrgY;
-out vec2 vVel;
 out vec3 vCol;
 uniform float time;
+uniform vec3 offColor;
 
 struct Particle{
 	vec4 pos;
@@ -105,20 +105,49 @@ float power(float p, float g) {
         return 1 - 0.5 * pow(2*(1 - p), g);
 }
 
+
 void main(){
 	uint gid = gl_VertexID;
 	
 	vec4 rpos = position;
-	rpos.xy += 4*random3(vec3(rpos.x, rpos.y, time)).xy;
-	gl_Position = modelViewProjectionMatrix * position;
+    if(p[gid].drag.z == 1.0) // if background
+		rpos.xy += 18*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy;
+	else
+		rpos.xy += 18*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy * (.05*(1-p[gid].drag.x) + .9);
+	gl_Position = modelViewProjectionMatrix * rpos;
 	float ps = clamp(1.*simplex3d_fractal(vec3(gid)), 0.0, 1.0);
 	// float ps = 2.728;
 	ps = 2.6 + 2*power(ps, 1);
-	gl_PointSize = ps*12;
+	gl_PointSize = (p[gid].drag.x + .24) * ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x) + 2*(-.5+random3(vec3(rpos.x, rpos.y, time*.1)).x));
 	vPointSize = gl_PointSize; 
 	vPointDrgY = p[gid].drag.y;
 
-	vVel = p[gid].drag.zw;
+	
+	vec3 skyclra = vec3(194, 82, 70)/255. + vec3(29, 35, 22)/255. * (-1 + 2*random3(rpos.xyz+.3141));
+	vec3 skyclrb = vec3(88, 77, 83)/255. + vec3(11, 28, 17)/255. * (-1 + 2*random3(rpos.xyz+.2141));
+	vec3 skyclrc = vec3(130, 85, 62)/255. + vec3(39, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.6141));
+	
+	vec3 groundclra = vec3(200, 134, 69)/255. + vec3(49, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.3141));
+	vec3 groundclrb = vec3(88, 77, 83)/255. + vec3(11, 28, 17)/255. * (-1 + 2*random3(rpos.xyz+.2141));
+	vec3 groundclrc = vec3(216, 85, 62)/255. + vec3(39, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.6141));
 
-	vCol = p[gid].acc.rgb;
+	float psfactor = clamp(.5 + .5*gl_Position.y/800., 0.5, 1.);
+	float clfactor = clamp(.5 + .5*gl_Position.y/800.*2, 0.0, 1.);
+
+    if(p[gid].drag.z == 1.0){ // if background
+		gl_PointSize = psfactor
+		             * ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x)
+					 + 2*(-.5+random3(vec3(rpos.x, rpos.y, time*.1)).x));
+		vCol = offColor + skyclra + clfactor*(skyclrc - skyclra);
+	}
+	else if(p[gid].drag.z == .5){ // if ground
+		vCol = offColor + groundclra + clfactor*(groundclrc - groundclra);
+	}
+	else if(p[gid].drag.z == 0.0){
+		vec3 color = p[gid].acc.rgb;
+		vCol = offColor + color;
+	}
+	else if(p[gid].drag.z == -1.0){
+		gl_PointSize = 0.0;
+	}
 }

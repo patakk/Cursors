@@ -193,6 +193,7 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSlider.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp" />
+    <ClCompile Include="src\threeD.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
@@ -230,6 +231,8 @@
     <None Include="bin\data\shaders\cursorflow.frag" />
     <None Include="bin\data\shaders\cursorflow.vert" />
     <None Include="bin\data\shaders\cursors.geom" />
+    <None Include="bin\data\shaders\depth.frag" />
+    <None Include="bin\data\shaders\depth.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>

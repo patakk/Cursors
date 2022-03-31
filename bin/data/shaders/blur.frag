@@ -1,7 +1,7 @@
 #version 430
 
 uniform sampler2DRect tex0;
-uniform sampler2DRect flow;
+uniform sampler2DRect depthL;
 uniform float blurAmnt;
 uniform float time;
 uniform vec2 res;
@@ -89,6 +89,7 @@ float simplex3d_fractal(vec3 m) {
 
 vec4 blur13(sampler2DRect image, vec2 uv, vec2 resolution, vec2 direction) {
   vec4 color = texture(image, uv) * 0.18;
+  resolution = vec2(1.);
   vec2 off1 = vec2(1.411764705882353) * direction;
   vec2 off2 = vec2(2.2941176470588234) * direction;
   vec2 off3 = vec2(3.2941176470588234) * direction;
@@ -122,26 +123,32 @@ float power(float p, float g) {
 
 void main()
 {
-    vec4 thiscolor = texture(flow, texCoordVarying.xy);
 
-    float amp = length(texCoordVarying.xy/res.xy - .5)*4;
-    amp = abs(texCoordVarying.x/res.x - .5)*2;
-    amp = pow(amp, 4)*2;
+    float amp = length(texCoordVarying.xy/res.xy - .5)/length(vec2(.5));
+	amp = pow(amp, 3)*7 + .2;
+    //amp = abs(texCoordVarying.x/res.x - .5)*2;
+    //amp = pow(amp, 4)*12;
 
-	//vec3 ppp = vec3(texCoordVarying.x/res.x*2, texCoordVarying.y/res.y*2, time*0.01);
+	vec3 ppp = vec3(texCoordVarying.x/res.x*2, texCoordVarying.y/res.y*2, time*0.01);
 	//amp = clamp(power(simplex3d(ppp+31.31), 3)*8, 0, 8);
 
 	vec2 dir = vec2(amp, 0.);
-	//dir.x = amp*simplex3d(ppp);
-	//dir.y = amp*simplex3d(ppp+.5);
+	vec2 head = texCoordVarying.xy/res.xy - .5;
+	float ang = -atan(head.y/3, head.x);
+	dir.x = amp*simplex3d(ppp);
+	dir.y = amp*simplex3d(ppp+.5);
+	dir.x = amp*sin(ang);
+	dir.y = amp*cos(ang);
+	//dir = vec2(.1, .1);
 
     vec4 pts = texture(tex0, texCoordVarying.xy);
-    outputColor = blur13(flow, texCoordVarying.xy, vec2(1.,1.), dir);
+    outputColor = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), dir) + 0*vec4(0,0.2,.3,0);
+	
+    vec4 thiscolor = texture(tex0, texCoordVarying.xy);
+	outputColor = outputColor;
     //outputColor.r = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp, 0.)).r;
     //outputColor.g = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*2.1, 0.)).g;
     //outputColor.b = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*3.2, 0.)).b;
-    outputColor.rgb = clamp(abs(outputColor.rrr), 0., 1.);
-    outputColor = vec4(1,1,0,1);
     //outputColor = vec4(rgb, 1.0);
     //outputColor = vec4(flow_dir, 0., 1.);
      

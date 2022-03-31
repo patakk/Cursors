@@ -14,6 +14,15 @@ class ofApp : public ofBaseApp {
 		ofVec4f drag;
 	};
 
+	struct Tree {
+		ofVec3f pos;
+		ofVec3f col;
+		glm::mat4 worldMatrix;
+		float size;
+		float height;
+		ofCylinderPrimitive primitive;
+	};
+
 
 	public:
 		void setup();
@@ -34,37 +43,45 @@ class ofApp : public ofBaseApp {
 		void resetProject(int numParticles);
 		void particleSetup(const int n);
 		void initParticles();
-		void particleUpdate(float aliveCount, ofFbo aaa, float crazy);
+		void particleUpdate(float aliveCount, ofFbo threeD, ofFbo depthL, float crazy);
 		void particleDraw(float aliveCount);
-		void drawFlow(float aliveCount);
+
+		void threeDraw(bool depth);
+		void drawTrees();
 
 		ofTexture imgTexture;
 		int particleCount;
 
 		ofShader computeShader;
 		ofShader renderShader;
-		ofShader flowShader;
 
 		vector<Particle> particles;
 		ofBufferObject particlesBuffer;
 
 		ofVbo vbo;
-		ofFbo aaa;
 		ofLight light;
 		ofEasyCam cam;
 		ofShader blurShader;
+		ofShader depthShader;
 
 		ofFbo threeDLayer;
+		ofFbo depthLayer;
 		ofFbo particleLayer;
 		ofFbo postLayer;
 		ofFbo flowLayer;
 
 		float aliveCount;
+		float time = 0;
 
 		ofxPanel gui;
 		ofxToggle crazy;
 		ofxIntField particleNumField;
 		int particleNum;
+		ofColor hsv2rgb(ofColor);
+		ofColor bgColor;
+		ofColor offColor;
 
+		vector<Tree> trees;
+		void treeSetup();
 
 };
