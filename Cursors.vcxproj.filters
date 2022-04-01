@@ -43,8 +43,12 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp">
       <Filter>addons\ofxGui\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\pointLogic.cpp" />
-    <ClCompile Include="src\threeD.cpp" />
+    <ClCompile Include="src\pointLogic.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\threeD.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
