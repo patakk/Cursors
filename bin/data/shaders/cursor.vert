@@ -6,8 +6,11 @@ in vec4 position;
 out float vPointSize;
 out float vPointDrgY;
 out vec4 vCol;
+out vec2 vPos;
+out float vAng;
 uniform float time;
 uniform vec3 offColor;
+uniform vec2 screen;
 
 struct Particle{
 	vec4 pos;
@@ -141,9 +144,10 @@ void main(){
 	float psfactor = clamp(.5 + .5*gl_Position.y/800., 0.5, 1.);
 	float clfactor = clamp(.5 + .5*gl_Position.y/800.*2, 0.0, 1.);
 
+	vAng = random4(rpos.xyz+.3141+ggid*.11412).y*3.14*12 + 3.14/2;
+
     if(p[gid].drag.z == 1.0){ // if background
-		gl_PointSize = 1.4*psfactor
-		             * ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x)
+		gl_PointSize = ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x)
 					 + 2*(-.5+random3(vec3(rpos.x, rpos.y, time*.1)).x));
 		vCol = skyclrc + (clfactor + 1.8*random4(rpos.xyz+.5141+ggid*.0001412).r)*(skyclra - skyclrc);
 		if(random4(rpos.xyz+.13141+ggid*.311412).r > 0.248){
@@ -153,9 +157,10 @@ void main(){
 	else if(p[gid].drag.z == .5){ // if ground
 		vCol = skyclra;
 	}
-	else if(p[gid].drag.z == 0.0){
+	else if(p[gid].drag.z == 0.0){ // if trees
 		vec3 color = p[gid].acc.rgb;
-		vCol = vec4(color+offColor, 1.0) + 1*vec4(29, 35, 22, 0)/255. * (1*random4(rpos.xyz+.3141+ggid*.0001412));
+		vCol = vec4(color+offColor, 1.0) + 1*vec4(29, 35, 22, 0)/255. * (1*random4(rpos.xyz+.3141+ggid*.00001412));
+		vAng = random4(rpos.xyz+.3141+ggid*.11412).y*.05 + 3.14159/2;
 	}
 	else if(p[gid].drag.z == -1.0){
 		gl_PointSize = 0.0;
@@ -164,4 +169,6 @@ void main(){
 	if(random4(rpos.xyz+.3141+ggid*.311412).r > 0.348){
 		vCol = vec4(.66,.66,.66, .5);
 	}
+	gl_PointSize *= 1.7;
+	vPos = position.xy / screen.xy;
 }

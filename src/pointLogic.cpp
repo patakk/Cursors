@@ -68,8 +68,8 @@ void ofApp::particleUpdate(float aliveCount, ofFbo threeD, ofFbo depthL, float c
 
 void ofApp::particleDraw(float aliveCount) {
 
+	ofEnableAlphaBlending();
 	ofEnablePointSprites();
-	ofEnableArbTex();
 
 	renderShader.begin();
 	renderShader.setUniform2f("screen", glm::vec2(ofGetWidth(), ofGetHeight()));
@@ -78,6 +78,7 @@ void ofApp::particleDraw(float aliveCount) {
 	renderShader.setUniform1f("time", time);
 	renderShader.setUniformTexture("tex0", imgTexture, 0);
 	glActiveTexture(GL_TEXTURE0);
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 	vbo.draw(GL_POINTS, 0, particleCount);
 	renderShader.end();
 

@@ -7,6 +7,8 @@ in float vPointSize;
 out vec4 vFragColor;
 in float vPointDrgY;
 in vec4 vCol;
+in vec2 vPos;
+in float vAng;
 uniform float aliveCount;
 
 vec3 random3(vec3 c) {
@@ -98,6 +100,18 @@ float power(float p, float g) {
         return 1 - 0.5 * pow(2*(1 - p), g);
 }
 
+float circle(vec2 xy){
+    float dist = length(xy - .5);
+	return 1. - smoothstep(0.45, 0.55, dist);
+}
+
+float rect(vec2 xy){
+	float dist1 = smoothstep(0.2, 0.3, xy.x);
+    float dist2 = smoothstep(0.2, 0.3, 1. - xy.x);
+	float dist = dist1 * dist2;
+	return dist;
+}
+
 void main () {
     vec2 xy = gl_PointCoord;
     xy = vec2(xy.x, 1. - xy.y);
@@ -106,7 +120,7 @@ void main () {
 
 	float sx = 1 + .9*power(clamp(.5+.5*simplex3d(vec3(xy, 0)*.03),0,1),3);
 	float sy = 1 + .9*power(clamp(.5+.5*simplex3d(vec3(xy, 31.31)*.03),0,1),3);
-    float dist = length(xy*vec2(sx, sy)-vec2(sx, sy)*.5);
+    float dist = length(xy - .5);
     //float ddist = 1. - smoothstep(0.25, 0.45, dist);
     float ddist = float(dist < .5);
     float dddist = dist * float(ddist < .5);
@@ -119,6 +133,18 @@ void main () {
     }
 
     vFragColor.rgb = vCol.rgb;
-    vFragColor.a = ddist;
+    //vFragColor.a = circle(xy);
+
+	float ang = vPos.y*3.14;
+	ang = vAng;
+
+	xy = xy - .5;
+	float x = xy.x*cos(ang) - xy.y*sin(ang);
+	float y = xy.x*sin(ang) + xy.y*cos(ang);
+	xy.x = x*1.4;
+	xy.y = y*1.4;
+	xy = xy + .5;
+
+    vFragColor.a = rect(xy);
 
 }

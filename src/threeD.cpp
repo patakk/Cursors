@@ -11,7 +11,7 @@ void ofApp::treeSetup() {
 		float gh = ofRandom(255, 270);
 		if (gh > 255)
 			gh = gh - 255;
-		ofColor rgb = ofColor().fromHsb(gh, ofRandom(40, 140), ofRandom(140, 180));
+		ofColor rgb = ofColor().fromHsb(gh, ofRandom(77, 155), ofRandom(140, 180));
 		ofVec3f col = ofVec3f(rgb.r, rgb.g, rgb.b);
 		ofVec3f pos = ofVec3f(ofRandom(-888, 888), height * .5, ofRandom(-244, 244));
 		ofCylinderPrimitive primitive = ofCylinderPrimitive(size,  height, 32, 2);
