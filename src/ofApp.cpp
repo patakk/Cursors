@@ -8,7 +8,7 @@ void ofApp::setup() {
 	ofSetVerticalSync(true);
 	//ofHideCursor();
 
-	particleNum = 131100;
+	particleNum = 333333;
 	resetProject(particleNum);
 
 
@@ -24,25 +24,6 @@ void ofApp::update() {
 	}
 }
 
-
-ofColor ofApp::hsv2rgb(ofColor c) {
-	float h = c[0]/255.;
-	float s = c[1] / 255.;
-	float v = c[2] / 255.;
-	float r, g, b, f, p, q, t;
-	int i = floor(h * 6);
-	f = h * 6 - i;
-	p = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-	if (i % 6 == 0) { r = v, g = t, b = p; }
-	if (i % 6 == 1) { r = q, g = v, b = p; }
-	if (i % 6 == 2) { r = p, g = v, b = t; }
-	if (i % 6 == 3) { r = p, g = q, b = v; }
-	if (i % 6 == 4) { r = t, g = p, b = v; }
-	if (i % 6 == 5) { r = v, g = p, b = q; }
-	return ofColor(r*255, g * 255, b * 255);
-}
 
 void ofApp::draw() {
 	ofClear(0);
@@ -60,7 +41,7 @@ void ofApp::draw() {
 
 	// draw particles
 	particleLayer.begin();
-	ofBackground(bgColor + offColor);
+	ofBackground(bgColor);
 	particleDraw(aliveCount);
 	particleLayer.end();
 
@@ -70,7 +51,7 @@ void ofApp::draw() {
 	ofEnableArbTex();
 	blurShader.begin();
 	blurShader.setUniform2f("res", glm::vec2(ofGetWidth(), ofGetHeight()));
-	blurShader.setUniformTexture("depthL", depthLayer, 0);
+	blurShader.setUniformTexture("depthL", depthLayer.getTexture(), 1);
 	blurShader.setUniform1f("time", time);
 	//threeDLayer.draw(0, 0);
 	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
@@ -79,7 +60,7 @@ void ofApp::draw() {
 	blurShader.end();
 	postLayer.end();
 
-	postLayer.draw(0, 0);
+	particleLayer.draw(0, 0);
 
 	gui.draw();
 
@@ -97,7 +78,7 @@ void ofApp::resetProject(int numParticles) {
 	blurShader.load("shaders/blur.vert", "shaders/blur.frag");
 	depthShader.load("shaders/depth.vert", "shaders/depth.frag");
 
-	bgColor = hsv2rgb(ofColor(ofRandom(255), ofRandom(50, 140), ofRandom(80, 240)));
+	bgColor = ofColor::fromHsb(ofRandom(255), ofRandom(50, 110), ofRandom(133, 233));
 
 	particleLayer.allocate(ofGetWidth(), ofGetHeight());
 	postLayer.allocate(ofGetWidth(), ofGetHeight());

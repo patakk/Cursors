@@ -21,9 +21,9 @@ void ofApp::particleSetup(const int n) {
 void ofApp::initParticles() {
 	for (int i = 0; i < particleCount; ++i) {
 		Particle* p = &particles[i];
-		p->pos.x = ofRandom(100, ofGetWidth() - 100);
-		//p->pos.y = ofRandom(100, ofGetHeight() - 100);
-		p->pos.y = ofMap(i, 0, particleCount - 1, 100, ofGetHeight() - 100) + ofRandom(-4, 4);
+		p->pos.x = ofRandom(33, ofGetWidth() - 33);
+		p->pos.y = ofRandom(33, ofGetHeight() - 33);
+		//p->pos.y = ofMap(i, 0, particleCount - 1, 100, ofGetHeight() - 100) + ofRandom(-4, 4);
 
 		p->acc.x = ofRandom(140, 220) / 255.;
 		p->acc.y = ofRandom(110, 170) / 255.;

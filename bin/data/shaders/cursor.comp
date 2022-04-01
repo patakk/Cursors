@@ -155,11 +155,11 @@ void main(){
 	vec4 texdepth = texture(depthL, p[gid].pos.xy);
 
 	vec3 rrgb = random3(vec3(p[gid].pos.x, p[gid].pos.y, time+313.313)).rgb;
-	p[gid].acc.rgb = texcolor.rgb*(0.65+0.35*texdepth.r) + vec3(.3, .3, .3)*(-.5+rrgb); // color
+	p[gid].acc.rgb = texcolor.rgb*(0.65+0.35*texdepth.r) + 0*vec3(.3, .2, .1)*(-.5+rrgb); // color
 	p[gid].drg.x = texdepth.r; // depth for pointsize
 	
 	p[gid].drg.z = -1.0; // discard
-	if(texdepth.r == texdepth.g && texdepth.g == texdepth.b && texcolor.g < 0.5){
+	if(texdepth.r == texdepth.g && texdepth.g == texdepth.b && (texcolor.g < 0.6 && texcolor.r > 0.5)){
 		p[gid].drg.z = 0; // not background
 	}
 	

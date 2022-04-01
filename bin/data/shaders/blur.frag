@@ -124,8 +124,10 @@ float power(float p, float g) {
 void main()
 {
 
+    vec4 thiscolor = texture2DRect(depthL, texCoordVarying.xy);
     float amp = length(texCoordVarying.xy/res.xy - .5)/length(vec2(.5));
-	amp = pow(amp, 3)*7 + .2;
+	amp = pow(amp, 3)*17 + .2;
+	//amp = 5 - thiscolor.r*5;
     //amp = abs(texCoordVarying.x/res.x - .5)*2;
     //amp = pow(amp, 4)*12;
 
@@ -135,17 +137,17 @@ void main()
 	vec2 dir = vec2(amp, 0.);
 	vec2 head = texCoordVarying.xy/res.xy - .5;
 	float ang = -atan(head.y/3, head.x);
-	dir.x = amp*simplex3d(ppp);
-	dir.y = amp*simplex3d(ppp+.5);
+	ang = 0;
 	dir.x = amp*sin(ang);
 	dir.y = amp*cos(ang);
+	dir.x = amp*simplex3d(ppp*110);
+	dir.y = amp*simplex3d(ppp*110+.5);
 	//dir = vec2(.1, .1);
 
     vec4 pts = texture(tex0, texCoordVarying.xy);
     outputColor = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), dir) + 0*vec4(0,0.2,.3,0);
 	
-    vec4 thiscolor = texture(tex0, texCoordVarying.xy);
-	outputColor = outputColor;
+	outputColor.rgb = outputColor.rgb;
     //outputColor.r = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp, 0.)).r;
     //outputColor.g = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*2.1, 0.)).g;
     //outputColor.b = blur13(tex0, texCoordVarying.xy, vec2(1.,1.), vec2(amp*3.2, 0.)).b;

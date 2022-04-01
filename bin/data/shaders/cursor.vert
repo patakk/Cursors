@@ -5,7 +5,7 @@ uniform mat4 modelViewProjectionMatrix;
 in vec4 position;
 out float vPointSize;
 out float vPointDrgY;
-out vec3 vCol;
+out vec4 vCol;
 uniform float time;
 uniform vec3 offColor;
 
@@ -105,49 +105,63 @@ float power(float p, float g) {
         return 1 - 0.5 * pow(2*(1 - p), g);
 }
 
+vec4 random4(vec3 pos){
+	vec3 rr1 = random3(vec3(pos+1.2134114));
+	vec3 rr2 = random3(vec3(pos+.414114));
+	return vec4(rr2, rr1.x);
+}
+
 
 void main(){
 	uint gid = gl_VertexID;
 	
 	vec4 rpos = position;
     if(p[gid].drag.z == 1.0) // if background
-		rpos.xy += 18*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy;
+		rpos.xy += 8*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy;
 	else
-		rpos.xy += 18*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy * (.05*(1-p[gid].drag.x) + .9);
+		rpos.xy += 8*random3(vec3(rpos.x, rpos.y, p[gid].drag.y)).xy * (.015*(1-p[gid].drag.x) + .9);
 	gl_Position = modelViewProjectionMatrix * rpos;
 	float ps = clamp(1.*simplex3d_fractal(vec3(gid)), 0.0, 1.0);
 	// float ps = 2.728;
-	ps = 2.6 + 2*power(ps, 1);
-	gl_PointSize = (p[gid].drag.x + .24) * ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x) + 2*(-.5+random3(vec3(rpos.x, rpos.y, time*.1)).x));
-	vPointSize = gl_PointSize; 
+	ps = 1.6 + 1*power(ps, 1);
+	gl_PointSize = (p[gid].drag.x*0.25 + .34) * ps*(9 + 5*(random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x) + 2*(random3(vec3(rpos.x, rpos.y, time*.1)).x));
+	if(gl_PointSize != 0.0)
+		vPointSize = clamp(gl_PointSize, 3., 1000.); 
 	vPointDrgY = p[gid].drag.y;
 
+	float ggid = float(gid);
+	vec4 skyclra = vec4(194, 82, 70, 255)/255. + vec4(29, 35, 22, 0)/255. * (random4(rpos.xyz+.3141+ggid*.01412));
+	vec4 skyclrb = vec4(88, 77, 83, 88)/255. + vec4(11, 28, 17, 88)/255. * (random4(rpos.xyz+.2141+ggid*.01412));
+	vec4 skyclrc = vec4(166, 115, 62, 255)/255. + vec4(39, 25, 22, 0)/255. * (random4(rpos.xyz+.6141+ggid*.01412));
 	
-	vec3 skyclra = vec3(194, 82, 70)/255. + vec3(29, 35, 22)/255. * (-1 + 2*random3(rpos.xyz+.3141));
-	vec3 skyclrb = vec3(88, 77, 83)/255. + vec3(11, 28, 17)/255. * (-1 + 2*random3(rpos.xyz+.2141));
-	vec3 skyclrc = vec3(130, 85, 62)/255. + vec3(39, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.6141));
-	
-	vec3 groundclra = vec3(200, 134, 69)/255. + vec3(49, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.3141));
-	vec3 groundclrb = vec3(88, 77, 83)/255. + vec3(11, 28, 17)/255. * (-1 + 2*random3(rpos.xyz+.2141));
-	vec3 groundclrc = vec3(216, 85, 62)/255. + vec3(39, 25, 22)/255. * (-1 + 2*random3(rpos.xyz+.6141));
+	vec4 groundclra = vec4(233, 134, 69, 255)/255. + vec4(22, 25, 22, 0)/255. * (random4(rpos.xyz+.3141+ggid*.01412));
+	vec4 groundclrb = vec4(166, 133, 122, 188)/255. + vec4(11, 28, 17, 55)/255. * (random4(rpos.xyz+.2141+ggid*.1412));
+	vec4 groundclrc = vec4(144, 133, 211, 255)/255. + vec4(39, 25, 22, 0)/255. * (random4(rpos.xyz+.6141+ggid*.01412));
 
 	float psfactor = clamp(.5 + .5*gl_Position.y/800., 0.5, 1.);
 	float clfactor = clamp(.5 + .5*gl_Position.y/800.*2, 0.0, 1.);
 
     if(p[gid].drag.z == 1.0){ // if background
-		gl_PointSize = psfactor
+		gl_PointSize = 1.4*psfactor
 		             * ps*(9 + 5*(-.5+random3(vec3(rpos.x, rpos.y, p[gid].drag.y*0)).x)
 					 + 2*(-.5+random3(vec3(rpos.x, rpos.y, time*.1)).x));
-		vCol = offColor + skyclra + clfactor*(skyclrc - skyclra);
+		vCol = skyclrc + (clfactor + 1.8*random4(rpos.xyz+.5141+ggid*.0001412).r)*(skyclra - skyclrc);
+		if(random4(rpos.xyz+.13141+ggid*.311412).r > 0.248){
+		vCol = skyclrc + (2.8*random4(rpos.xyz+.5141+ggid*.0001412).r)*((skyclrb+skyclrc)/2 - skyclrc);
+		}
 	}
 	else if(p[gid].drag.z == .5){ // if ground
-		vCol = offColor + groundclra + clfactor*(groundclrc - groundclra);
+		vCol = skyclra;
 	}
 	else if(p[gid].drag.z == 0.0){
 		vec3 color = p[gid].acc.rgb;
-		vCol = offColor + color;
+		vCol = vec4(color+offColor, 1.0) + 1*vec4(29, 35, 22, 0)/255. * (1*random4(rpos.xyz+.3141+ggid*.0001412));
 	}
 	else if(p[gid].drag.z == -1.0){
 		gl_PointSize = 0.0;
+	}
+
+	if(random4(rpos.xyz+.3141+ggid*.311412).r > 0.348){
+		vCol = vec4(.66,.66,.66, .5);
 	}
 }

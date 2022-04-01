@@ -1,14 +1,18 @@
 #include "ofApp.h"
 
 void ofApp::treeSetup() {
-	int numTrees = 30;
+	int numTrees = 130;
 
 	trees.resize(numTrees);
 	for (int k = 0; k < numTrees; k++) {
 		Tree* tree = &trees[k];
 		float size = ofRandom(3, 9);
 		float height = 900;
-		ofVec3f col = ofVec3f(194 + 39 * ofRandom(-1, 1), 82 + 25 * ofRandom(-1, 1), 70 + 22 * ofRandom(-1, 1));
+		float gh = ofRandom(255, 270);
+		if (gh > 255)
+			gh = gh - 255;
+		ofColor rgb = ofColor().fromHsb(gh, ofRandom(40, 140), ofRandom(140, 180));
+		ofVec3f col = ofVec3f(rgb.r, rgb.g, rgb.b);
 		ofVec3f pos = ofVec3f(ofRandom(-888, 888), height * .5, ofRandom(-244, 244));
 		ofCylinderPrimitive primitive = ofCylinderPrimitive(size,  height, 32, 2);
 		primitive.setPosition(pos.x, pos.y, pos.z);
